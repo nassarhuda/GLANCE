@@ -161,6 +161,43 @@ function create_C(clique_sets)
     return ei,ej
 end
 
+function TuranShadow_matrix(A::SparseMatrixCSC{T},myfn,from_k,upto_k,scaleA,t) where T
+    GW = spzeros(size(A)...)
+    for k = from_k:upto_k
+        # approxval,clique_sets = TuranShadow(A,k,t)
+
+        approxval,clique_sets = TuranShadow(A,k,t)
+        csets_new = copy(clique_sets)
+        map(i->csets_new[i] = sort(csets_new[i]),1:length(csets_new))
+        csets_new = unique(csets_new)
+        clique_sets = copy(csets_new)
+
+        # map!(i->sort(clique_sets[i]),clique_sets,1:length(clique_sets))
+        # clique_sets = unique(clique_sets)
+
+        # csets_new = copy(clique_sets)
+        # map(i->csets_new[i] = sort(csets_new[i]),1:length(csets_new))
+        # csets_new = unique(csets_new)
+        # clique_sets = copy(csets_new)
+        
+        if approxval == 0
+            @warn "largest clique size found is $(k-1)"
+            break
+        end
+        ei,ej = create_C(clique_sets)
+        C = sparse(ei,ej,1,length(clique_sets),A.n)
+        W = C'*C
+        W = myfn(k)*W
+        W = W - spdiagm(0=>diag(W))
+        GW += W # GW = max.(W,GW) #instead of GW += W
+    end
+
+    GW += scaleA*A
+    
+    dropzeros!(GW)
+    return GW
+end
+
 # cid = 3
 # approxval,clique_sets = TuranShadow(A,cid,t)
 # ei,ej = create_C(clique_sets)

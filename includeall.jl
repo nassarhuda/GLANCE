@@ -13,12 +13,12 @@ using LinearAlgebra
 using MatrixNetworks
 using Plots
 using GraphRecipes
-using NearestNeighbors
+#using NearestNeighbors
 
 using LightGraphs
 using SimpleWeightedGraphs
-using Node2Vec
-using Tables
+#using Node2Vec
+#using Tables
 using CSV
 using MAT
 using Distributed
@@ -28,8 +28,8 @@ addprocs(100-nprocs())
 @everywhere using MatrixNetworks
 
 include("TuranShadow.jl")
-include("n2v.jl")
-include("draw_neighboring_nodes.jl")
+#include("n2v.jl")
+#include("draw_neighboring_nodes.jl")
 
 # pyplot()
 
@@ -113,7 +113,7 @@ function plotweighted!(A,xy)
 end
 
 using PyCall
-igraph = pyimport("igraph")
+#igraph = pyimport("igraph")
 
 function igraph_layout(A::SparseMatrixCSC{T}, layoutname::AbstractString="drl") where T
     ei,ej,ew = findnz(A)
